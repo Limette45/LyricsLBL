@@ -297,7 +297,7 @@ async function copyText(text, button) {
         await navigator.clipboard.writeText(text);
 
         const originalText = button.textContent;
-        button.textContent = "Copied";
+        button.textContent = "Did!";
 
         setTimeout(() => {
             button.textContent = originalText;
@@ -311,7 +311,7 @@ async function copyText(text, button) {
         textarea.remove();
 
         const originalText = button.textContent;
-        button.textContent = "Copied";
+        button.textContent = "Did!";
 
         setTimeout(() => {
             button.textContent = originalText;
