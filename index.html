@@ -240,21 +240,33 @@ function processLyrics() {
         return;
     }
 
-    const firstBracket = text.indexOf("[");
-    const lastBracket = text.lastIndexOf("]");
+    const lines = text.split(/\r?\n/);
 
-    let lyricsText;
+    let firstBracketIndex = -1;
+    let bracketLineIndexes = [];
 
-    if (firstBracket !== -1 && lastBracket !== -1 && lastBracket >= firstBracket) {
-        lyricsText = text.slice(firstBracket, lastBracket + 1);
+    lines.forEach((line, index) => {
+        if (isBracketLine(line)) {
+            bracketLineIndexes.push(index);
+
+            if (firstBracketIndex === -1) {
+                firstBracketIndex = index;
+            }
+        }
+    });
+
+    if (firstBracketIndex === -1) {
+        lyricsLines = lines
+            .map(cleanLine)
+            .filter(line => line !== "");
     } else {
-        lyricsText = text;
-    }
+        const lastBracketIndex = bracketLineIndexes[bracketLineIndexes.length - 1];
 
-    lyricsLines = lyricsText
-        .split(/\r?\n/)
-        .map(cleanLine)
-        .filter(line => line !== "");
+        lyricsLines = lines
+            .slice(firstBracketIndex, lastBracketIndex)
+            .map(cleanLine)
+            .filter(line => line !== "");
+    }
 
     cleanLines = lyricsLines.filter(line => !isBracketLine(line));
 
