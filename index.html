@@ -3,105 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lyrics Cleaner</title>
+<title>Lyrics lbl</title>
 <style>
-    * {
-        box-sizing: border-box;
-    }
+* {
+    box-sizing: border-box;
+}
 
-    body {
-        font-family: Arial, sans-serif;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
-        background: #f5f5f5;
-        color: #222;
-    }
+body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f5f5f5;
+    color: #222;
+}
 
-    h1 {
-        margin-top: 0;
-    }
+h1 {
+    margin-top: 0;
+}
 
-    textarea {
-        width: 100%;
-        min-height: 220px;
-        padding: 12px;
-        font-size: 16px;
-        resize: vertical;
-        border: 1px solid #bbb;
-        border-radius: 6px;
-        background: white;
-    }
+h2 {
+    margin-bottom: 10px;
+}
 
-    button {
-        padding: 8px 14px;
-        border: 1px solid #aaa;
-        border-radius: 5px;
-        background: white;
-        cursor: pointer;
-        font-size: 14px;
-    }
+textarea {
+    width: 100%;
+    min-height: 220px;
+    padding: 12px;
+    font-size: 16px;
+    resize: vertical;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    background: white;
+}
 
-    button:hover {
-        background: #eee;
-    }
+button {
+    padding: 8px 14px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+}
 
-    .main-button {
-        margin-top: 10px;
-    }
+button:hover {
+    background: #eee;
+}
 
-    .section {
-        margin-top: 25px;
-    }
+.controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
 
-    .line {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 7px 0;
-        border-bottom: 1px solid #ddd;
-    }
+.section {
+    margin-top: 25px;
+}
 
-    .line-text {
-        flex: 1;
-        min-width: 0;
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
-    }
+.group {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    padding: 12px;
+}
 
-    .line-text.selected {
-        background: #b7d7ff;
-    }
+.group-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+}
 
-    .saved-line {
-        padding: 8px 0;
-        border-bottom: 1px solid #ddd;
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
-    }
+.line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid #eee;
+}
 
-    #output,
-    #saved {
-        background: white;
-        border-radius: 6px;
-        padding: 10px 14px;
-    }
+.line:last-child {
+    border-bottom: none;
+}
 
-    .empty {
-        color: #888;
-        padding: 8px 0;
-    }
+.line-text {
+    flex: 1;
+    min-width: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.saved-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.saved-line:last-child {
+    border-bottom: none;
+}
+
+.saved-text {
+    flex: 1;
+    min-width: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.empty {
+    color: #888;
+    padding: 8px 0;
+}
+
+#output,
+#saved {
+    background: white;
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+
+#savedHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#savedHeader h2 {
+    margin: 0;
+}
 </style>
 </head>
 <body>
 
-<h1>Lyrics Cleaner</h1>
+<h1>Lyrics lbl</h1>
 
 <textarea id="input" placeholder="Paste lyrics here..."></textarea>
 
-<br>
-
-<button class="main-button" id="processButton">Process</button>
+<div class="controls">
+    <button id="processButton">Process</button>
+    <button id="resetButton">Reset</button>
+</div>
 
 <div class="section">
     <h2>Lyrics</h2>
@@ -111,7 +156,11 @@
 </div>
 
 <div class="section">
-    <h2>Saved</h2>
+    <div id="savedHeader">
+        <h2>Saved</h2>
+        <button id="copyAllButton">Copy All</button>
+    </div>
+
     <div id="saved">
         <div class="empty">No saved lyrics.</div>
     </div>
@@ -120,12 +169,21 @@
 <script>
 const input = document.getElementById("input");
 const processButton = document.getElementById("processButton");
+const resetButton = document.getElementById("resetButton");
+const copyAllButton = document.getElementById("copyAllButton");
 const output = document.getElementById("output");
 const saved = document.getElementById("saved");
 
-const STORAGE_KEY = "lyricsCleaner_savedLines";
+const INPUT_KEY = "lyricsCleaner_input";
+const LYRICS_KEY = "lyricsCleaner_lyrics";
+const SAVED_KEY = "lyricsCleaner_saved";
 
-let savedLines = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+let lyricsLines = JSON.parse(localStorage.getItem(LYRICS_KEY) || "[]");
+let savedLines = JSON.parse(localStorage.getItem(SAVED_KEY) || "[]");
+
+function isBracketLine(line) {
+    return /^\[.*\]$/.test(line.trim());
+}
 
 function cleanLine(line) {
     line = line.trim();
@@ -134,12 +192,11 @@ function cleanLine(line) {
         return "";
     }
 
-    if (/^\[.*\]$/.test(line)) {
+    if (isBracketLine(line)) {
         return line;
     }
 
     line = line.replace(/\s*\([^()]*\)\s*/g, " ");
-
     line = line.replace(/\s{2,}/g, " ").trim();
 
     return line;
@@ -149,7 +206,9 @@ function processLyrics() {
     const text = input.value;
 
     if (!text.trim()) {
-        output.innerHTML = '<div class="empty">No lyrics processed yet.</div>';
+        lyricsLines = [];
+        localStorage.setItem(LYRICS_KEY, JSON.stringify(lyricsLines));
+        renderLyrics();
         return;
     }
 
@@ -164,71 +223,111 @@ function processLyrics() {
         lyricsText = text;
     }
 
-    const lines = lyricsText
+    lyricsLines = lyricsText
         .split(/\r?\n/)
         .map(cleanLine)
         .filter(line => line !== "");
 
+    localStorage.setItem(LYRICS_KEY, JSON.stringify(lyricsLines));
+
+    renderLyrics();
+}
+
+function renderLyrics() {
     output.innerHTML = "";
 
-    if (lines.length === 0) {
-        output.innerHTML = '<div class="empty">No lyrics found.</div>';
+    if (lyricsLines.length === 0) {
+        output.innerHTML = '<div class="empty">No lyrics processed yet.</div>';
         return;
     }
 
-    lines.forEach(line => {
-        createLyricsLine(line);
+    let currentGroup = null;
+
+    lyricsLines.forEach(line => {
+        if (isBracketLine(line)) {
+            currentGroup = document.createElement("div");
+            currentGroup.className = "group";
+
+            const title = document.createElement("div");
+            title.className = "group-title";
+            title.textContent = line;
+
+            currentGroup.appendChild(title);
+            output.appendChild(currentGroup);
+
+            return;
+        }
+
+        if (!currentGroup) {
+            currentGroup = document.createElement("div");
+            currentGroup.className = "group";
+            output.appendChild(currentGroup);
+        }
+
+        const row = document.createElement("div");
+        row.className = "line";
+
+        const textElement = document.createElement("span");
+        textElement.className = "line-text";
+        textElement.textContent = line;
+
+        const copyButton = document.createElement("button");
+        copyButton.textContent = "Copy";
+
+        copyButton.addEventListener("click", () => {
+            copyText(line, copyButton);
+        });
+
+        const saveButton = document.createElement("button");
+        saveButton.textContent = "Save";
+
+        saveButton.addEventListener("click", () => {
+            saveLine(line);
+        });
+
+        row.appendChild(textElement);
+        row.appendChild(copyButton);
+        row.appendChild(saveButton);
+
+        currentGroup.appendChild(row);
     });
 }
 
-function createLyricsLine(text) {
-    const row = document.createElement("div");
-    row.className = "line";
+async function copyText(text, button) {
+    try {
+        await navigator.clipboard.writeText(text);
 
-    const textElement = document.createElement("span");
-    textElement.className = "line-text";
-    textElement.textContent = text;
+        const originalText = button.textContent;
+        button.textContent = "Copied";
 
-    const selectButton = document.createElement("button");
-    selectButton.textContent = "Select";
+        setTimeout(() => {
+            button.textContent = originalText;
+        }, 1000);
+    } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
 
-    selectButton.addEventListener("click", () => {
-        selectText(textElement);
-    });
+        const originalText = button.textContent;
+        button.textContent = "Copied";
 
-    const saveButton = document.createElement("button");
-    saveButton.textContent = "Save";
-
-    saveButton.addEventListener("click", () => {
-        saveLine(text);
-    });
-
-    row.appendChild(textElement);
-    row.appendChild(selectButton);
-    row.appendChild(saveButton);
-
-    output.appendChild(row);
-}
-
-function selectText(element) {
-    const selection = window.getSelection();
-    const range = document.createRange();
-
-    range.selectNodeContents(element);
-
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    document.querySelectorAll(".line-text.selected").forEach(el => {
-        el.classList.remove("selected");
-    });
-
-    element.classList.add("selected");
+        setTimeout(() => {
+            button.textContent = originalText;
+        }, 1000);
+    }
 }
 
 function saveLine(text) {
     savedLines.push(text);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedLines));
+
+    localStorage.setItem(
+        SAVED_KEY,
+        JSON.stringify(savedLines)
+    );
+
     renderSaved();
 }
 
@@ -240,30 +339,85 @@ function renderSaved() {
         return;
     }
 
-    savedLines.forEach((text, index) => {
+    savedLines.forEach(text => {
         const row = document.createElement("div");
         row.className = "saved-line";
 
         const textElement = document.createElement("span");
+        textElement.className = "saved-text";
         textElement.textContent = text;
 
-        const selectButton = document.createElement("button");
-        selectButton.textContent = "Select";
-        selectButton.style.marginLeft = "8px";
+        const copyButton = document.createElement("button");
+        copyButton.textContent = "Copy";
 
-        selectButton.addEventListener("click", () => {
-            selectText(textElement);
+        copyButton.addEventListener("click", () => {
+            copyText(text, copyButton);
         });
 
         row.appendChild(textElement);
-        row.appendChild(selectButton);
+        row.appendChild(copyButton);
 
         saved.appendChild(row);
     });
 }
 
-processButton.addEventListener("click", processLyrics);
+async function copyAll() {
+    if (savedLines.length === 0) {
+        return;
+    }
 
+    const text = savedLines.join("\n");
+
+    try {
+        await navigator.clipboard.writeText(text);
+
+        const originalText = copyAllButton.textContent;
+        copyAllButton.textContent = "Copied";
+
+        setTimeout(() => {
+            copyAllButton.textContent = originalText;
+        }, 1000);
+    } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+
+        const originalText = copyAllButton.textContent;
+        copyAllButton.textContent = "Copied";
+
+        setTimeout(() => {
+            copyAllButton.textContent = originalText;
+        }, 1000);
+    }
+}
+
+function resetAll() {
+    input.value = "";
+    lyricsLines = [];
+    savedLines = [];
+
+    localStorage.removeItem(INPUT_KEY);
+    localStorage.removeItem(LYRICS_KEY);
+    localStorage.removeItem(SAVED_KEY);
+
+    output.innerHTML = '<div class="empty">No lyrics processed yet.</div>';
+    saved.innerHTML = '<div class="empty">No saved lyrics.</div>';
+}
+
+input.addEventListener("input", () => {
+    localStorage.setItem(INPUT_KEY, input.value);
+});
+
+processButton.addEventListener("click", processLyrics);
+resetButton.addEventListener("click", resetAll);
+copyAllButton.addEventListener("click", copyAll);
+
+input.value = localStorage.getItem(INPUT_KEY) || "";
+
+renderLyrics();
 renderSaved();
 </script>
 
