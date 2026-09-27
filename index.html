@@ -118,21 +118,30 @@ button:hover {
     padding: 8px 0;
 }
 
-#saved {
+#saved,
+#cleanLyrics {
     background: white;
     border-radius: 6px;
     padding: 10px 14px;
 }
 
-#savedHeader {
+#savedHeader,
+#cleanLyricsHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
 
-#savedHeader h2 {
+#savedHeader h2,
+#cleanLyricsHeader h2 {
     margin: 0;
+}
+
+#cleanLyricsText {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
 }
 </style>
 </head>
@@ -165,20 +174,35 @@ button:hover {
     </div>
 </div>
 
+<div class="section">
+    <div id="cleanLyricsHeader">
+        <h2>Clean Lyrics</h2>
+        <button id="copyCleanButton">Copy All</button>
+    </div>
+
+    <div id="cleanLyrics">
+        <div class="empty">No clean lyrics yet.</div>
+    </div>
+</div>
+
 <script>
 const input = document.getElementById("input");
 const processButton = document.getElementById("processButton");
 const resetButton = document.getElementById("resetButton");
 const copyAllButton = document.getElementById("copyAllButton");
+const copyCleanButton = document.getElementById("copyCleanButton");
 const output = document.getElementById("output");
 const saved = document.getElementById("saved");
+const cleanLyrics = document.getElementById("cleanLyrics");
 
 const INPUT_KEY = "lyricsCleaner_input";
 const LYRICS_KEY = "lyricsCleaner_lyrics";
 const SAVED_KEY = "lyricsCleaner_saved";
+const CLEAN_KEY = "lyricsCleaner_clean";
 
 let lyricsLines = JSON.parse(localStorage.getItem(LYRICS_KEY) || "[]");
 let savedLines = JSON.parse(localStorage.getItem(SAVED_KEY) || "[]");
+let cleanLines = JSON.parse(localStorage.getItem(CLEAN_KEY) || "[]");
 
 function isBracketLine(line) {
     return /^\[.*\]$/.test(line.trim());
@@ -206,8 +230,13 @@ function processLyrics() {
 
     if (!text.trim()) {
         lyricsLines = [];
+        cleanLines = [];
+
         localStorage.setItem(LYRICS_KEY, JSON.stringify(lyricsLines));
+        localStorage.setItem(CLEAN_KEY, JSON.stringify(cleanLines));
+
         renderLyrics();
+        renderCleanLyrics();
         return;
     }
 
@@ -227,9 +256,13 @@ function processLyrics() {
         .map(cleanLine)
         .filter(line => line !== "");
 
+    cleanLines = lyricsLines;
+
     localStorage.setItem(LYRICS_KEY, JSON.stringify(lyricsLines));
+    localStorage.setItem(CLEAN_KEY, JSON.stringify(cleanLines));
 
     renderLyrics();
+    renderCleanLyrics();
 }
 
 function renderLyrics() {
@@ -393,17 +426,68 @@ async function copyAll() {
     }
 }
 
+async function copyCleanLyrics() {
+    if (cleanLines.length === 0) {
+        return;
+    }
+
+    const text = cleanLines.join("\n");
+
+    try {
+        await navigator.clipboard.writeText(text);
+
+        const originalText = copyCleanButton.textContent;
+        copyCleanButton.textContent = "Copied";
+
+        setTimeout(() => {
+            copyCleanButton.textContent = originalText;
+        }, 1000);
+    } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+
+        const originalText = copyCleanButton.textContent;
+        copyCleanButton.textContent = "Copied";
+
+        setTimeout(() => {
+            copyCleanButton.textContent = originalText;
+        }, 1000);
+    }
+}
+
+function renderCleanLyrics() {
+    cleanLyrics.innerHTML = "";
+
+    if (cleanLines.length === 0) {
+        cleanLyrics.innerHTML = '<div class="empty">No clean lyrics yet.</div>';
+        return;
+    }
+
+    const textElement = document.createElement("div");
+    textElement.id = "cleanLyricsText";
+    textElement.textContent = cleanLines.join("\n");
+
+    cleanLyrics.appendChild(textElement);
+}
+
 function resetAll() {
     input.value = "";
     lyricsLines = [];
     savedLines = [];
+    cleanLines = [];
 
     localStorage.removeItem(INPUT_KEY);
     localStorage.removeItem(LYRICS_KEY);
     localStorage.removeItem(SAVED_KEY);
+    localStorage.removeItem(CLEAN_KEY);
 
     output.innerHTML = '<div class="empty">No lyrics processed yet.</div>';
     saved.innerHTML = '<div class="empty">No saved lyrics.</div>';
+    cleanLyrics.innerHTML = '<div class="empty">No clean lyrics yet.</div>';
 }
 
 input.addEventListener("input", () => {
@@ -413,11 +497,13 @@ input.addEventListener("input", () => {
 processButton.addEventListener("click", processLyrics);
 resetButton.addEventListener("click", resetAll);
 copyAllButton.addEventListener("click", copyAll);
+copyCleanButton.addEventListener("click", copyCleanLyrics);
 
 input.value = localStorage.getItem(INPUT_KEY) || "";
 
 renderLyrics();
 renderSaved();
+renderCleanLyrics();
 </script>
 
 </body>
