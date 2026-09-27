@@ -323,13 +323,6 @@ function renderLyrics() {
         textElement.className = "line-text";
         textElement.textContent = line;
 
-        const copyButton = document.createElement("button");
-        copyButton.textContent = "Copy";
-
-        copyButton.addEventListener("click", () => {
-            copyText(line, copyButton);
-        });
-
         const saveButton = document.createElement("button");
         saveButton.textContent = "Save";
 
@@ -338,7 +331,6 @@ function renderLyrics() {
         });
 
         row.appendChild(textElement);
-        row.appendChild(copyButton);
         row.appendChild(saveButton);
 
         currentGroup.appendChild(row);
