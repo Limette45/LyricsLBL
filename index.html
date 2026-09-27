@@ -208,6 +208,10 @@ function isBracketLine(line) {
     return /^\[.*\]$/.test(line.trim());
 }
 
+function isTooLong(line) {
+    return line.trim().split(/\s+/).length >= 15;
+}
+
 function cleanLine(line) {
     line = line.trim();
 
@@ -221,6 +225,10 @@ function cleanLine(line) {
 
     line = line.replace(/\s*\([^()]*\)\s*/g, " ");
     line = line.replace(/\s{2,}/g, " ").trim();
+
+    if (isTooLong(line)) {
+        return "";
+    }
 
     return line;
 }
