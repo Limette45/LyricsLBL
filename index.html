@@ -256,7 +256,7 @@ function processLyrics() {
         .map(cleanLine)
         .filter(line => line !== "");
 
-    cleanLines = lyricsLines;
+    cleanLines = lyricsLines.filter(line => !isBracketLine(line));
 
     localStorage.setItem(LYRICS_KEY, JSON.stringify(lyricsLines));
     localStorage.setItem(CLEAN_KEY, JSON.stringify(cleanLines));
