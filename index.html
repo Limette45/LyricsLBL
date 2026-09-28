@@ -50,6 +50,23 @@ button:hover {
     background: #eee;
 }
 
+.page-controls {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.page-button {
+    min-width: 70px;
+}
+
+.page-button.active {
+    background: #222;
+    color: white;
+    border-color: #222;
+}
+
 .controls {
     display: flex;
     gap: 8px;
@@ -150,6 +167,13 @@ button:hover {
 
 <h1>Lyrics lbl</h1>
 
+<div class="page-controls">
+    <button class="page-button active" data-page="1">Page 1</button>
+    <button class="page-button" data-page="2">Page 2</button>
+    <button class="page-button" data-page="3">Page 3</button>
+    <button class="page-button" data-page="4">Page 4</button>
+</div>
+
 <textarea id="input" placeholder="Paste lyrics here..."></textarea>
 
 <div class="controls">
@@ -195,15 +219,49 @@ const copyCleanButton = document.getElementById("copyCleanButton");
 const output = document.getElementById("output");
 const saved = document.getElementById("saved");
 const cleanLyrics = document.getElementById("cleanLyrics");
+const pageButtons = document.querySelectorAll(".page-button");
 
-const INPUT_KEY = "lyricsCleaner_input";
-const LYRICS_KEY = "lyricsCleaner_lyrics";
-const SAVED_KEY = "lyricsCleaner_saved";
-const CLEAN_KEY = "lyricsCleaner_clean";
+let currentPage = 1;
 
-let lyricsLines = JSON.parse(localStorage.getItem(LYRICS_KEY) || "[]");
-let savedLines = JSON.parse(localStorage.getItem(SAVED_KEY) || "[]");
-let cleanLines = JSON.parse(localStorage.getItem(CLEAN_KEY) || "[]");
+let lyricsLines = [];
+let savedLines = [];
+let cleanLines = [];
+
+function getKey(type) {
+    return `lyricsCleaner_page${currentPage}_${type}`;
+}
+
+function loadPage() {
+    lyricsLines = JSON.parse(
+        localStorage.getItem(getKey("lyrics")) || "[]"
+    );
+
+    savedLines = JSON.parse(
+        localStorage.getItem(getKey("saved")) || "[]"
+    );
+
+    cleanLines = JSON.parse(
+        localStorage.getItem(getKey("clean")) || "[]"
+    );
+
+    input.value = localStorage.getItem(getKey("input")) || "";
+
+    pageButtons.forEach(button => {
+        button.classList.toggle(
+            "active",
+            Number(button.dataset.page) === currentPage
+        );
+    });
+
+    renderLyrics();
+    renderSaved();
+    renderCleanLyrics();
+}
+
+function switchPage(page) {
+    currentPage = page;
+    loadPage();
+}
 
 function isBracketLine(line) {
     return /^\[.*\]$/.test(line.trim());
@@ -241,8 +299,15 @@ function processLyrics() {
         lyricsLines = [];
         cleanLines = [];
 
-        localStorage.setItem(LYRICS_KEY, JSON.stringify(lyricsLines));
-        localStorage.setItem(CLEAN_KEY, JSON.stringify(cleanLines));
+        localStorage.setItem(
+            getKey("lyrics"),
+            JSON.stringify(lyricsLines)
+        );
+
+        localStorage.setItem(
+            getKey("clean"),
+            JSON.stringify(cleanLines)
+        );
 
         renderLyrics();
         renderCleanLyrics();
@@ -269,7 +334,8 @@ function processLyrics() {
             .map(cleanLine)
             .filter(line => line !== "");
     } else {
-        const lastBracketIndex = bracketLineIndexes[bracketLineIndexes.length - 1];
+        const lastBracketIndex =
+            bracketLineIndexes[bracketLineIndexes.length - 1];
 
         lyricsLines = lines
             .slice(firstBracketIndex, lastBracketIndex)
@@ -277,10 +343,19 @@ function processLyrics() {
             .filter(line => line !== "");
     }
 
-    cleanLines = lyricsLines.filter(line => !isBracketLine(line));
+    cleanLines = lyricsLines.filter(
+        line => !isBracketLine(line)
+    );
 
-    localStorage.setItem(LYRICS_KEY, JSON.stringify(lyricsLines));
-    localStorage.setItem(CLEAN_KEY, JSON.stringify(cleanLines));
+    localStorage.setItem(
+        getKey("lyrics"),
+        JSON.stringify(lyricsLines)
+    );
+
+    localStorage.setItem(
+        getKey("clean"),
+        JSON.stringify(cleanLines)
+    );
 
     renderLyrics();
     renderCleanLyrics();
@@ -290,7 +365,8 @@ function renderLyrics() {
     output.innerHTML = "";
 
     if (lyricsLines.length === 0) {
-        output.innerHTML = '<div class="empty">No lyrics processed yet.</div>';
+        output.innerHTML =
+            '<div class="empty">No lyrics processed yet.</div>';
         return;
     }
 
@@ -369,7 +445,7 @@ function saveLine(text) {
     savedLines.push(text);
 
     localStorage.setItem(
-        SAVED_KEY,
+        getKey("saved"),
         JSON.stringify(savedLines)
     );
 
@@ -380,7 +456,8 @@ function renderSaved() {
     saved.innerHTML = "";
 
     if (savedLines.length === 0) {
-        saved.innerHTML = '<div class="empty">No saved lyrics.</div>';
+        saved.innerHTML =
+            '<div class="empty">No saved lyrics.</div>';
         return;
     }
 
@@ -476,7 +553,8 @@ function renderCleanLyrics() {
     cleanLyrics.innerHTML = "";
 
     if (cleanLines.length === 0) {
-        cleanLyrics.innerHTML = '<div class="empty">No clean lyrics yet.</div>';
+        cleanLyrics.innerHTML =
+            '<div class="empty">No clean lyrics yet.</div>';
         return;
     }
 
@@ -493,18 +571,26 @@ function resetAll() {
     savedLines = [];
     cleanLines = [];
 
-    localStorage.removeItem(INPUT_KEY);
-    localStorage.removeItem(LYRICS_KEY);
-    localStorage.removeItem(SAVED_KEY);
-    localStorage.removeItem(CLEAN_KEY);
+    localStorage.removeItem(getKey("input"));
+    localStorage.removeItem(getKey("lyrics"));
+    localStorage.removeItem(getKey("saved"));
+    localStorage.removeItem(getKey("clean"));
 
-    output.innerHTML = '<div class="empty">No lyrics processed yet.</div>';
-    saved.innerHTML = '<div class="empty">No saved lyrics.</div>';
-    cleanLyrics.innerHTML = '<div class="empty">No clean lyrics yet.</div>';
+    output.innerHTML =
+        '<div class="empty">No lyrics processed yet.</div>';
+
+    saved.innerHTML =
+        '<div class="empty">No saved lyrics.</div>';
+
+    cleanLyrics.innerHTML =
+        '<div class="empty">No clean lyrics yet.</div>';
 }
 
 input.addEventListener("input", () => {
-    localStorage.setItem(INPUT_KEY, input.value);
+    localStorage.setItem(
+        getKey("input"),
+        input.value
+    );
 });
 
 processButton.addEventListener("click", processLyrics);
@@ -512,11 +598,13 @@ resetButton.addEventListener("click", resetAll);
 copyAllButton.addEventListener("click", copyAll);
 copyCleanButton.addEventListener("click", copyCleanLyrics);
 
-input.value = localStorage.getItem(INPUT_KEY) || "";
+pageButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        switchPage(Number(button.dataset.page));
+    });
+});
 
-renderLyrics();
-renderSaved();
-renderCleanLyrics();
+loadPage();
 </script>
 
 </body>
