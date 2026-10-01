@@ -221,7 +221,8 @@ const saved = document.getElementById("saved");
 const cleanLyrics = document.getElementById("cleanLyrics");
 const pageButtons = document.querySelectorAll(".page-button");
 
-let currentPage = 1;
+let currentPage =
+    Number(localStorage.getItem("lyricsCleaner_currentPage")) || 1;
 
 let lyricsLines = [];
 let savedLines = [];
@@ -260,6 +261,12 @@ function loadPage() {
 
 function switchPage(page) {
     currentPage = page;
+
+    localStorage.setItem(
+        "lyricsCleaner_currentPage",
+        currentPage
+    );
+
     loadPage();
 }
 
