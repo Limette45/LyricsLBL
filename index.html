@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -241,6 +242,13 @@ function loadPage() {
         localStorage.getItem(getKey("saved")) || "[]"
     );
 
+    savedLines = [...new Set(savedLines)];
+
+    localStorage.setItem(
+        getKey("saved"),
+        JSON.stringify(savedLines)
+    );
+
     cleanLines = JSON.parse(
         localStorage.getItem(getKey("clean")) || "[]"
     );
@@ -408,10 +416,16 @@ function renderLyrics() {
         textElement.textContent = line;
 
         const saveButton = document.createElement("button");
-        saveButton.textContent = "Save";
+
+        const isSaved = savedLines.includes(line);
+        saveButton.textContent = isSaved ? "Unsave" : "Save";
 
         saveButton.addEventListener("click", () => {
-            saveLine(line);
+            if (savedLines.includes(line)) {
+                unsaveLine(line);
+            } else {
+                saveLine(line);
+            }
         });
 
         row.appendChild(textElement);
@@ -449,6 +463,10 @@ async function copyText(text, button) {
 }
 
 function saveLine(text) {
+    if (savedLines.includes(text)) {
+        return;
+    }
+
     savedLines.push(text);
 
     localStorage.setItem(
@@ -457,6 +475,21 @@ function saveLine(text) {
     );
 
     renderSaved();
+    renderLyrics();
+}
+
+function unsaveLine(text) {
+    savedLines = savedLines.filter(
+        line => line !== text
+    );
+
+    localStorage.setItem(
+        getKey("saved"),
+        JSON.stringify(savedLines)
+    );
+
+    renderSaved();
+    renderLyrics();
 }
 
 function renderSaved() {
