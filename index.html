@@ -15,16 +15,18 @@ body {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
-    background: #f5f5f5;
-    color: #222;
+    background: #f1f4f8;
+    color: #253247;
 }
 
 h1 {
     margin-top: 0;
+    color: #1e293b;
 }
 
 h2 {
     margin-bottom: 10px;
+    color: #334155;
 }
 
 textarea {
@@ -33,22 +35,32 @@ textarea {
     padding: 12px;
     font-size: 16px;
     resize: vertical;
-    border: 1px solid #bbb;
-    border-radius: 6px;
-    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #253247;
+    outline: none;
+}
+
+textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
 button {
     padding: 8px 14px;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #334155;
     cursor: pointer;
     font-size: 14px;
+    transition: background 0.15s, border-color 0.15s;
 }
 
 button:hover {
-    background: #eee;
+    background: #e8edf4;
+    border-color: #94a3b8;
 }
 
 .page-controls {
@@ -60,12 +72,14 @@ button:hover {
 
 .page-button {
     min-width: 70px;
+    background: #e2e8f0;
+    border-color: #cbd5e1;
 }
 
 .page-button.active {
-    background: #222;
+    background: #334155;
     color: white;
-    border-color: #222;
+    border-color: #334155;
 }
 
 .controls {
@@ -74,23 +88,45 @@ button:hover {
     margin-top: 10px;
 }
 
+#processButton {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+#processButton:hover {
+    background: #1d4ed8;
+}
+
+#resetButton {
+    background: #ffffff;
+    color: #b91c1c;
+    border-color: #fca5a5;
+}
+
+#resetButton:hover {
+    background: #fef2f2;
+}
+
 .section {
     margin-top: 25px;
 }
 
 .group {
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #dbe3ed;
+    border-radius: 8px;
     margin-bottom: 12px;
     padding: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .group-title {
     font-weight: bold;
     margin-bottom: 8px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
 }
 
 .line {
@@ -98,7 +134,7 @@ button:hover {
     align-items: center;
     gap: 8px;
     padding: 7px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #edf0f5;
 }
 
 .line:last-child {
@@ -111,6 +147,37 @@ button:hover {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     font-size: 18px;
+    color: #253247;
+}
+
+.save-button {
+    width: 76px;
+    min-width: 76px;
+    padding: 8px 6px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.save-button.save {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+.save-button.save:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.save-button.undo {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fca5a5;
+}
+
+.save-button.undo:hover {
+    background: #fecaca;
+    border-color: #f87171;
 }
 
 .saved-line {
@@ -118,7 +185,7 @@ button:hover {
     align-items: center;
     gap: 8px;
     padding: 8px 0;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .saved-line:last-child {
@@ -130,17 +197,19 @@ button:hover {
     min-width: 0;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+    color: #253247;
 }
 
 .empty {
-    color: #888;
+    color: #94a3b8;
     padding: 8px 0;
 }
 
 #saved,
 #cleanLyrics {
-    background: white;
-    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #dbe3ed;
+    border-radius: 8px;
     padding: 10px 14px;
 }
 
@@ -161,6 +230,22 @@ button:hover {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     line-height: 1.6;
+    color: #334155;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    .line-text {
+        font-size: 16px;
+    }
+
+    .save-button {
+        width: 68px;
+        min-width: 68px;
+    }
 }
 </style>
 </head>
@@ -416,9 +501,10 @@ function renderLyrics() {
         textElement.textContent = line;
 
         const saveButton = document.createElement("button");
-
         const isSaved = savedLines.includes(line);
-        saveButton.textContent = isSaved ? "Unsave" : "Save";
+
+        saveButton.textContent = isSaved ? "Undo" : "Save";
+        saveButton.className = `save-button ${isSaved ? "undo" : "save"}`;
 
         saveButton.addEventListener("click", () => {
             if (savedLines.includes(line)) {
