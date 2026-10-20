@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -100,6 +99,16 @@ button:hover {
 
 #resetButton:hover {
     background: #ffe0e3;
+}
+
+#savedListButton {
+    background: #e8effc;
+    color: #244f99;
+    border-color: #b5c9ed;
+}
+
+#savedListButton:hover {
+    background: #d5e3fa;
 }
 
 .section {
@@ -250,6 +259,7 @@ button:hover {
 <div class="controls">
     <button id="processButton">✅Process</button>
     <button id="resetButton">❌Reset</button>
+    <button id="savedListButton">Saved List</button>
 </div>
 
 <div class="section">
@@ -285,6 +295,7 @@ button:hover {
 const input = document.getElementById("input");
 const processButton = document.getElementById("processButton");
 const resetButton = document.getElementById("resetButton");
+const savedListButton = document.getElementById("savedListButton");
 const copyAllButton = document.getElementById("copyAllButton");
 const copyCleanButton = document.getElementById("copyCleanButton");
 const output = document.getElementById("output");
@@ -706,6 +717,12 @@ input.addEventListener("input", () => {
 
 processButton.addEventListener("click", processLyrics);
 resetButton.addEventListener("click", resetAll);
+savedListButton.addEventListener("click", () => {
+    document.getElementById("savedHeader").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+});
 copyAllButton.addEventListener("click", copyAll);
 copyCleanButton.addEventListener("click", copyCleanLyrics);
 
