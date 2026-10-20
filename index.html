@@ -15,18 +15,16 @@ body {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
-    background: #f1f4f8;
-    color: #253247;
+    background: #f3f5f8;
+    color: #252b36;
 }
 
 h1 {
     margin-top: 0;
-    color: #1e293b;
 }
 
 h2 {
     margin-bottom: 10px;
-    color: #334155;
 }
 
 textarea {
@@ -35,32 +33,30 @@ textarea {
     padding: 12px;
     font-size: 16px;
     resize: vertical;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #253247;
-    outline: none;
+    border: 1px solid #cbd3df;
+    border-radius: 6px;
+    background: #fff;
+    color: #252b36;
 }
 
 textarea:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    outline: 2px solid #9bbcf5;
+    border-color: #477fe0;
 }
 
 button {
     padding: 8px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background: #ffffff;
-    color: #334155;
+    border: 1px solid #cbd3df;
+    border-radius: 5px;
+    background: #fff;
+    color: #303949;
     cursor: pointer;
     font-size: 14px;
     transition: background 0.15s, border-color 0.15s;
 }
 
 button:hover {
-    background: #e8edf4;
-    border-color: #94a3b8;
+    background: #e9edf3;
 }
 
 .page-controls {
@@ -72,14 +68,12 @@ button:hover {
 
 .page-button {
     min-width: 70px;
-    background: #e2e8f0;
-    border-color: #cbd5e1;
 }
 
 .page-button.active {
-    background: #334155;
+    background: #34445e;
     color: white;
-    border-color: #334155;
+    border-color: #34445e;
 }
 
 .controls {
@@ -89,23 +83,23 @@ button:hover {
 }
 
 #processButton {
-    background: #2563eb;
+    background: #2563b8;
     color: white;
-    border-color: #2563eb;
+    border-color: #2563b8;
 }
 
 #processButton:hover {
-    background: #1d4ed8;
+    background: #1d4f96;
 }
 
 #resetButton {
-    background: #ffffff;
-    color: #b91c1c;
-    border-color: #fca5a5;
+    background: #fff0f0;
+    color: #b42332;
+    border-color: #e8b6bc;
 }
 
 #resetButton:hover {
-    background: #fef2f2;
+    background: #ffe0e3;
 }
 
 .section {
@@ -113,20 +107,18 @@ button:hover {
 }
 
 .group {
-    background: #ffffff;
-    border: 1px solid #dbe3ed;
-    border-radius: 8px;
+    background: white;
+    border: 1px solid #d5dce6;
+    border-radius: 6px;
     margin-bottom: 12px;
     padding: 12px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .group-title {
     font-weight: bold;
     margin-bottom: 8px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #e2e8f0;
-    color: #475569;
+    border-bottom: 1px solid #e0e5ec;
 }
 
 .line {
@@ -134,7 +126,7 @@ button:hover {
     align-items: center;
     gap: 8px;
     padding: 7px 0;
-    border-bottom: 1px solid #edf0f5;
+    border-bottom: 1px solid #edf0f4;
 }
 
 .line:last-child {
@@ -147,37 +139,33 @@ button:hover {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     font-size: 18px;
-    color: #253247;
 }
 
-.save-button {
+.line button {
+    flex-shrink: 0;
     width: 76px;
-    min-width: 76px;
-    padding: 8px 6px;
+    padding: 8px 0;
     font-weight: bold;
-    text-align: center;
 }
 
-.save-button.save {
-    background: #2563eb;
-    color: #ffffff;
-    border-color: #2563eb;
+.line button.save-button {
+    background: #e4f4e9;
+    color: #176b38;
+    border-color: #8bc9a0;
 }
 
-.save-button.save:hover {
-    background: #1d4ed8;
-    border-color: #1d4ed8;
+.line button.save-button:hover {
+    background: #ccebd6;
 }
 
-.save-button.undo {
-    background: #fee2e2;
-    color: #b91c1c;
-    border-color: #fca5a5;
+.line button.undo-button {
+    background: #fff0dc;
+    color: #984b08;
+    border-color: #edbd83;
 }
 
-.save-button.undo:hover {
-    background: #fecaca;
-    border-color: #f87171;
+.line button.undo-button:hover {
+    background: #ffe1b8;
 }
 
 .saved-line {
@@ -185,7 +173,7 @@ button:hover {
     align-items: center;
     gap: 8px;
     padding: 8px 0;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e0e5ec;
 }
 
 .saved-line:last-child {
@@ -197,19 +185,18 @@ button:hover {
     min-width: 0;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    color: #253247;
 }
 
 .empty {
-    color: #94a3b8;
+    color: #7b8493;
     padding: 8px 0;
 }
 
 #saved,
 #cleanLyrics {
-    background: #ffffff;
-    border: 1px solid #dbe3ed;
-    border-radius: 8px;
+    background: white;
+    border: 1px solid #d5dce6;
+    border-radius: 6px;
     padding: 10px 14px;
 }
 
@@ -226,26 +213,22 @@ button:hover {
     margin: 0;
 }
 
+#copyAllButton,
+#copyCleanButton {
+    background: #e8effc;
+    color: #244f99;
+    border-color: #b5c9ed;
+}
+
+#copyAllButton:hover,
+#copyCleanButton:hover {
+    background: #d5e3fa;
+}
+
 #cleanLyricsText {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     line-height: 1.6;
-    color: #334155;
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 12px;
-    }
-
-    .line-text {
-        font-size: 18px;
-    }
-
-    .save-button {
-        width: 68px;
-        min-width: 68px;
-    }
 }
 </style>
 </head>
@@ -504,7 +487,7 @@ function renderLyrics() {
         const isSaved = savedLines.includes(line);
 
         saveButton.textContent = isSaved ? "Undo" : "Save";
-        saveButton.className = `save-button ${isSaved ? "undo" : "save"}`;
+        saveButton.className = isSaved ? "undo-button" : "save-button";
 
         saveButton.addEventListener("click", () => {
             if (savedLines.includes(line)) {
