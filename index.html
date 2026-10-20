@@ -236,6 +236,16 @@ button:hover {
     background: #d5e3fa;
 }
 
+#backToTopButton {
+    background: #e8effc;
+    color: #244f99;
+    border-color: #b5c9ed;
+}
+
+#backToTopButton:hover {
+    background: #d5e3fa;
+}
+
 #cleanLyricsText {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -243,7 +253,7 @@ button:hover {
 }
 </style>
 </head>
-<body>
+<body id="top">
 
 <h1>🎶Lyrics lbl</h1>
 
@@ -278,6 +288,10 @@ button:hover {
     <div id="saved">
         <div class="empty">No saved lyrics.</div>
     </div>
+
+    <div style="margin-top: 10px;">
+        <button id="backToTopButton">Back to Top</button>
+    </div>
 </div>
 
 <div class="section">
@@ -296,6 +310,7 @@ const input = document.getElementById("input");
 const processButton = document.getElementById("processButton");
 const resetButton = document.getElementById("resetButton");
 const savedListButton = document.getElementById("savedListButton");
+const backToTopButton = document.getElementById("backToTopButton");
 const copyAllButton = document.getElementById("copyAllButton");
 const copyCleanButton = document.getElementById("copyCleanButton");
 const output = document.getElementById("output");
@@ -717,12 +732,21 @@ input.addEventListener("input", () => {
 
 processButton.addEventListener("click", processLyrics);
 resetButton.addEventListener("click", resetAll);
+
 savedListButton.addEventListener("click", () => {
     document.getElementById("savedHeader").scrollIntoView({
         behavior: "smooth",
         block: "start"
     });
 });
+
+backToTopButton.addEventListener("click", () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
+
 copyAllButton.addEventListener("click", copyAll);
 copyCleanButton.addEventListener("click", copyCleanLyrics);
 
